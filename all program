@@ -1,0 +1,79 @@
+queue:-
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to enqueue an element while maintaining sorted order
+void enqueue(Node** head, int data) {
+    Node* newNode = createNode(data);
+
+    // If the queue is empty or the new node should be at the head
+    if (*head == NULL || data < (*head)->data) {
+        newNode->next = *head;
+        *head = newNode;
+        return;
+    }
+
+    // Find the correct position to insert the new node
+    Node* current = *head;
+    while (current->next != NULL && current->next->data < data) {
+        current = current->next;
+    }
+
+    newNode->next = current->next;
+    current->next = newNode;
+}
+
+// Function to dequeue (remove) the front element
+int dequeue(Node** head) {
+    if (*head == NULL) {
+        printf("Queue is empty. Cannot dequeue.\n");
+        return -1; // Indicating an error
+    }
+
+    Node* temp = *head;
+    int data = temp->data;
+    *head = (*head)->next;
+    free(temp);
+    return data;
+}
+
+// Function to print the queue
+void printQueue(Node* head) {
+    Node* current = head;
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    Node* queue = NULL;
+
+    enqueue(&queue, 10);
+    enqueue(&queue, 5);
+    enqueue(&queue, 20);
+    enqueue(&queue, 15);
+
+    printf("Queue after enqueues: ");
+    printQueue(queue);
+
+    printf("Dequeued element: %d\n", dequeue(&queue));
+    printf("Queue after dequeue: ");
+    printQueue(queue);
+
+    return 0;
+}
